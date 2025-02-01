@@ -1,6 +1,7 @@
 package com.cheonjaeung.gson.kotlinx.collections.immutable
 
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import kotlinx.collections.immutable.*
 import org.junit.jupiter.api.Assertions.*
@@ -54,6 +55,118 @@ class ImmutableCollectionTypeAdapterFactoryTest {
 
         assertEquals(
             complexJsonString.removeWhitespacesAndNewlines(),
+            serialized.removeWhitespacesAndNewlines()
+        )
+    }
+
+    @Test
+    fun testDuplicatedKeyMapDeserialization() {
+        val gson = GsonBuilder()
+            .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory())
+            .create()
+
+        val duplicatedJsonString = """
+            {
+                "1": 1,
+                "2": 3,
+                "3": 5,
+                "3": 7
+            }
+        """.trimIndent()
+
+        assertThrows(JsonSyntaxException::class.java) {
+            gson.fromJson<ImmutableMap<String, Int>>(duplicatedJsonString, ImmutableMap::class.java)
+        }
+    }
+
+    @Test
+    fun testComplexMapKeySerialization() {
+        val gson = GsonBuilder()
+            .enableComplexMapKeySerialization()
+            .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory(
+                complexMapKeySerialization = true
+            ))
+            .create()
+
+        val expected = """
+            [
+                [
+                    {
+                        "string": "value1",
+                        "numbers": [1, 2, 3, 4]
+                    },
+                    1
+                ],
+                [
+                    {
+                        "string": "value2",
+                        "numbers": [5, 6, 7, 8]
+                    },
+                    2
+                ]
+            ]
+        """.trimIndent()
+
+        val complexKeyMap = persistentMapOf(
+            Pair(
+                ComplexExpected.TestObject(
+                    string = "value1",
+                    numbers = persistentListOf(1, 2, 3, 4)
+                ),
+                1
+            ),
+            Pair(
+                ComplexExpected.TestObject(
+                    string = "value2",
+                    numbers = persistentListOf(5, 6, 7, 8)
+                ),
+                2
+            )
+        )
+
+        val serialized = gson.toJson(complexKeyMap)
+
+        assertEquals(
+            expected.removeWhitespacesAndNewlines(),
+            serialized.removeWhitespacesAndNewlines()
+        )
+    }
+
+    @Test
+    fun testNonComplexMapKeySerialization() {
+        val gson = GsonBuilder()
+            .disableHtmlEscaping()
+            .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory())
+            .create()
+
+        val expected = """
+            {
+                "TestObject(string=value1,numbers=[1,2,3,4])": 1,
+                "TestObject(string=value2,numbers=[5,6,7,8])": 2
+            }
+        """.trimIndent()
+
+        val complexKeyMap = persistentMapOf(
+            Pair(
+                ComplexExpected.TestObject(
+                    string = "value1",
+                    numbers = persistentListOf(1, 2, 3, 4)
+                ),
+                1
+            ),
+            Pair(
+                ComplexExpected.TestObject(
+                    string = "value2",
+                    numbers = persistentListOf(5, 6, 7, 8)
+                ),
+                2
+            )
+        )
+
+        val serialized = gson.toJson(complexKeyMap)
+
+        assertEquals(
+            expected.removeWhitespacesAndNewlines(),
             serialized.removeWhitespacesAndNewlines()
         )
     }
