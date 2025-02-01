@@ -3,9 +3,11 @@ kotlin = "2.0.0"
 gson = "2.12.1"
 kotlinxCollectionsImmutable = "0.3.8"
 junit = "5.11.4"
+mavenPublish = "0.30.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 
 [libraries]
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
