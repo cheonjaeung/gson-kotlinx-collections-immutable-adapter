@@ -1,6 +1,7 @@
 # Gson Kotlin Immutable Collections Type Adapter Library
 
 [![CI](https://github.com/cheonjaeung/gson-kotlinx-collections-immutable-adapter/actions/workflows/ci.yml/badge.svg)](https://github.com/cheonjaeung/gson-kotlinx-collections-immutable-adapter/actions/workflows/ci.yml)
+![maven-central](https://img.shields.io/maven-central/v/com.cheonjaeung.gson/kotlinx-collections-immutable-adapter)
 [![Static Badge](https://img.shields.io/badge/License-Apache%202.0-Green)](https://github.com/cheonjaeung/gridlayout-compose/blob/main/LICENSE.txt)
 
 A [Gson](https://github.com/google/gson) `TypeAdapterFactory` for collection types of [kotlinx.collections.immutable](https://github.com/Kotlin/kotlinx.collections.immutable).
@@ -11,7 +12,7 @@ This library is published to Maven Central repository.
 
 ```kotlin
 dependencies {
-    implementation("com.cheonjaeung.gson:kotlinx-collections-immutable-adapter:<version>")
+    implementation("com.cheonjaeung.gson:kotlinx-collections-immutable-adapter:1.0.0")
 }
 ```
 
