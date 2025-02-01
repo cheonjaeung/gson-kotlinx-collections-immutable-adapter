@@ -7,11 +7,22 @@ A [Gson](https://github.com/google/gson) `TypeAdapterFactory` for collection typ
 
 ## Installation
 
+This library is published to Maven Central repository.
+
 ```kotlin
 dependencies {
     implementation("com.cheonjaeung.gson:kotlinx-collections-immutable-adapter:<version>")
 }
 ```
+
+### Dependencies
+
+This library is built on these dependencies:
+
+- Java 8
+- Kotlin 1.9.21
+- Gson 2.12.1
+- Kotlinx Collections Immutable: 0.3.8
 
 ## Usage
 
