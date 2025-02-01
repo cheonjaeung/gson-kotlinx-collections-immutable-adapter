@@ -5,7 +5,15 @@
 
 A [Gson](https://github.com/google/gson) `TypeAdapterFactory` for collection types of [kotlinx.collections.immutable](https://github.com/Kotlin/kotlinx.collections.immutable).
 
-## Getting Started
+## Installation
+
+```kotlin
+dependencies {
+    implementation("com.cheonjaeung.gson:kotlinx-collections-immutable-adapter:<version>")
+}
+```
+
+## Usage
 
 Register `ImmutableCollectionTypeAdapterFactory` to `GsonBuilder` when you build `Gson` instance.
 
@@ -49,12 +57,79 @@ println(deserialized.numbers) // [1, 2, 3, 4, 5]
 > [!NOTE]
 > Gson can serialize immutable collections to JSON string without `ImmutableCollectionTypeAdapterFactory`.
 
-## Installation
+### Complex Map Key
+
+Basically, Gson serializes map key using `toString()`.
 
 ```kotlin
-dependencies {
-    implementation("com.cheonjaeung.gson:kotlinx-collections-immutable-adapter:<version>")
-}
+data class Person(
+    val firstName: String,
+    val lastName: String
+)
+
+val gson = GsonBuilder().create()
+
+val map = mapOf(
+    Person("John", "Doe") to 32,
+    Person("Jane", "Doe") to 30
+)
+
+println(gson.toJson(map))
+// {
+//     "Person(firstName=John, lastName=Doe)": 32,
+//     "Person(firstName=Jane, lastName=Doe)": 30
+// }
+```
+
+Gson supports complex types of map key.
+If `complexMapKeySerialization` is enabled, Gson serializes complex map to JSON array of key value pairs.
+`ImmutableCollectionTypeAdapterFactory` also supports it.
+If you enable it with `GsonBuilder.enableComplexMapKeySerialization()`, you should set factory's `complexMapKeySerialization` to `true`.
+
+```kotlin
+data class Person(
+    val firstName: String,
+    val lastName: String
+)
+
+val gson = GsonBuilder()
+    .enableComplexMapKeySerialization()
+    .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory(
+        complexMapKeySerialization = true
+    ))
+    .create()
+
+val map = persistentMapOf(
+    Person("John", "Doe") to 32,
+    Person("Jane", "Doe") to 30
+)
+
+println(gson.toJson(map))
+// [
+//     [
+//         {"firstName":"John","lastName":"Doe"},
+//         32
+//     ],
+//     [
+//         {"firstName":"Jane","lastName":"Doe"},
+//         30
+//     ]
+// ]
+```
+
+Even if `complexMapKeySerialization` is enabled, simple map is serialized as a regular JSON object.
+
+```kotlin
+val gson = GsonBuilder()
+    .enableComplexMapKeySerialization()
+    .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory(
+        complexMapKeySerialization = true
+    ))
+    .create()
+
+val simpleMap = persistentMapOf("a" to 1, "b" to 2)
+
+println(gson.toJson(simpleMap)) // {"a": 1,"b": 2}
 ```
 
 ## License
