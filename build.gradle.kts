@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+    alias(libs.plugins.kotlin.jvm)
 }
 
 group = "com.cheonjaeung.gson"
@@ -14,10 +14,11 @@ repositories {
 }
 
 dependencies {
-    api("com.google.code.gson:gson:2.11.0")
-    api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8")
+    api(libs.gson)
+    api(libs.kotlinx.collections.immutable)
 
-    testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
+    testRuntimeOnly(libs.junit.engine)
 }
 
 tasks.test {
