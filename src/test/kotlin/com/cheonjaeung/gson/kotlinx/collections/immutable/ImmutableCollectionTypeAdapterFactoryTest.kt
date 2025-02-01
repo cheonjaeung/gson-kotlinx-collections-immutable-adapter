@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 class ImmutableCollectionTypeAdapterFactoryTest {
 
     @Test
-    fun testPrimitiveDeserialization() {
+    fun testDeserialization() {
         val gson = GsonBuilder()
             .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory())
             .create()
@@ -20,7 +20,7 @@ class ImmutableCollectionTypeAdapterFactoryTest {
     }
 
     @Test
-    fun testPrimitiveSerialization() {
+    fun testSerialization() {
         val gson = GsonBuilder()
             .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory())
             .create()
@@ -29,6 +29,31 @@ class ImmutableCollectionTypeAdapterFactoryTest {
 
         assertEquals(
             jsonString.removeWhitespacesAndNewlines(),
+            serialized.removeWhitespacesAndNewlines()
+        )
+    }
+
+    @Test
+    fun testComplexTypeDeserialization() {
+        val gson = GsonBuilder()
+            .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory())
+            .create()
+
+        val deserialized = gson.fromJson(complexJsonString, ComplexExpected::class.java)
+
+        assertEquals(complexExpectedObject, deserialized)
+    }
+
+    @Test
+    fun testComplexTypeSerialization() {
+        val gson = GsonBuilder()
+            .registerTypeAdapterFactory(ImmutableCollectionTypeAdapterFactory())
+            .create()
+
+        val serialized = gson.toJson(complexExpectedObject)
+
+        assertEquals(
+            complexJsonString.removeWhitespacesAndNewlines(),
             serialized.removeWhitespacesAndNewlines()
         )
     }
@@ -219,92 +244,6 @@ class ImmutableCollectionTypeAdapterFactoryTest {
                             "5": "e"
                         }
                     }
-                },
-                "object": {
-                    "immutable": {
-                        "list": [
-                            {
-                                 "string": "value1",
-                                 "numbers": [1, 2, 3]
-                            },
-                            {
-                                 "string": "value2",
-                                 "numbers": [1, 2, 3]
-                            }
-                        ],
-                        "collection": [
-                            {
-                                 "string": "value3",
-                                 "numbers": [1, 2, 3]
-                            },
-                            {
-                                 "string": "value4",
-                                 "numbers": [1, 2, 3]
-                            }
-                        ],
-                        "set": [
-                            {
-                                 "string": "value5",
-                                 "numbers": [1, 2, 3]
-                            },
-                            {
-                                 "string": "value6",
-                                 "numbers": [1, 2, 3]
-                            }
-                        ],
-                        "map": {
-                            "1": {
-                                 "string": "value7",
-                                 "numbers": [1, 2, 3]
-                            },
-                            "2": {
-                                 "string": "value8",
-                                 "numbers": [1, 2, 3]
-                            }
-                        }
-                    },
-                    "persistent": {
-                        "list": [
-                            {
-                                 "string": "value1",
-                                 "numbers": [1, 2, 3]
-                            },
-                            {
-                                 "string": "value2",
-                                 "numbers": [1, 2, 3]
-                            }
-                        ],
-                        "collection": [
-                            {
-                                 "string": "value3",
-                                 "numbers": [1, 2, 3]
-                            },
-                            {
-                                 "string": "value4",
-                                 "numbers": [1, 2, 3]
-                            }
-                        ],
-                        "set": [
-                            {
-                                 "string": "value5",
-                                 "numbers": [1, 2, 3]
-                            },
-                            {
-                                 "string": "value6",
-                                 "numbers": [1, 2, 3]
-                            }
-                        ],
-                        "map": {
-                            "1": {
-                                 "string": "value7",
-                                 "numbers": [1, 2, 3]
-                            },
-                            "2": {
-                                 "string": "value8",
-                                 "numbers": [1, 2, 3]
-                            }
-                        }
-                    }
                 }
             }
         """.trimIndent()
@@ -491,44 +430,6 @@ class ImmutableCollectionTypeAdapterFactoryTest {
                         "5" to "e"
                     )
                 )
-            ),
-            objects = Expected.TypedContent(
-                immutable = Expected.Immutable(
-                    list = persistentListOf(
-                        Expected.TestObject("value1", persistentListOf(1, 2, 3)),
-                        Expected.TestObject("value2", persistentListOf(1, 2, 3))
-                    ),
-                    collection = persistentListOf(
-                        Expected.TestObject("value3", persistentListOf(1, 2, 3)),
-                        Expected.TestObject("value4", persistentListOf(1, 2, 3))
-                    ),
-                    set = persistentSetOf(
-                        Expected.TestObject("value5", persistentListOf(1, 2, 3)),
-                        Expected.TestObject("value6", persistentListOf(1, 2, 3))
-                    ),
-                    map = persistentMapOf(
-                        "1" to Expected.TestObject("value7", persistentListOf(1, 2, 3)),
-                        "2" to Expected.TestObject("value8", persistentListOf(1, 2, 3))
-                    )
-                ),
-                persistent = Expected.Persistent(
-                    list = persistentListOf(
-                        Expected.TestObject("value1", persistentListOf(1, 2, 3)),
-                        Expected.TestObject("value2", persistentListOf(1, 2, 3))
-                    ),
-                    collection = persistentListOf(
-                        Expected.TestObject("value3", persistentListOf(1, 2, 3)),
-                        Expected.TestObject("value4", persistentListOf(1, 2, 3))
-                    ),
-                    set = persistentSetOf(
-                        Expected.TestObject("value5", persistentListOf(1, 2, 3)),
-                        Expected.TestObject("value6", persistentListOf(1, 2, 3))
-                    ),
-                    map = persistentMapOf(
-                        "1" to Expected.TestObject("value7", persistentListOf(1, 2, 3)),
-                        "2" to Expected.TestObject("value8", persistentListOf(1, 2, 3))
-                    )
-                )
             )
         )
     }
@@ -547,9 +448,7 @@ class ImmutableCollectionTypeAdapterFactoryTest {
         @SerializedName("char")
         val char: TypedContent<Char>,
         @SerializedName("string")
-        val string: TypedContent<String>,
-        @SerializedName("object")
-        val objects: TypedContent<TestObject>
+        val string: TypedContent<String>
     ) {
         data class TypedContent<T>(
             @SerializedName("immutable")
@@ -579,12 +478,130 @@ class ImmutableCollectionTypeAdapterFactoryTest {
             @SerializedName("map")
             val map: PersistentMap<String, T>
         )
+    }
 
+    private val complexJsonString = """
+        {
+            "matrix": [
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8]
+            ],
+            "objectList": [
+                {
+                    "string": "value1",
+                    "numbers": [1, 2, 3]
+                },
+                {
+                    "string": "value2",
+                    "numbers": [4, 5, 6]
+                },
+                {
+                    "string": "value3",
+                    "numbers": [7, 8, 9]
+                }
+            ],
+            "nestedObjectList": [
+                {
+                    "string": "value4",
+                    "objects": [
+                        {
+                            "string": "value1",
+                            "numbers": [1, 2, 3]
+                        },
+                        {
+                            "string": "value2",
+                            "numbers": [4, 5, 6]
+                        }
+                    ]
+                },
+                {
+                    "string": "value5",
+                    "objects": [
+                        {
+                            "string": "value1",
+                            "numbers": [1, 2, 3]
+                        },
+                        {
+                            "string": "value2",
+                            "numbers": [4, 5, 6]
+                        }
+                    ]
+                }
+            ]
+        }
+    """.trimIndent()
+
+    private val complexExpectedObject = ComplexExpected(
+        matrix = persistentListOf(
+            persistentListOf(1, 2, 3),
+            persistentListOf(4, 5, 6),
+            persistentListOf(7, 8)
+        ),
+        objectList = persistentListOf(
+            ComplexExpected.TestObject(
+                string = "value1",
+                numbers = persistentListOf(1, 2, 3)
+            ),
+            ComplexExpected.TestObject(
+                string = "value2",
+                numbers = persistentListOf(4, 5, 6)
+            ),
+            ComplexExpected.TestObject(
+                string = "value3",
+                numbers = persistentListOf(7, 8, 9)
+            )
+        ),
+        nestedObjectList = persistentListOf(
+            ComplexExpected.TestObjectList(
+                string = "value4",
+                objects = persistentListOf(
+                    ComplexExpected.TestObject(
+                        string = "value1",
+                        numbers = persistentListOf(1, 2, 3)
+                    ),
+                    ComplexExpected.TestObject(
+                        string = "value2",
+                        numbers = persistentListOf(4, 5, 6)
+                    )
+                )
+            ),
+            ComplexExpected.TestObjectList(
+                string = "value5",
+                objects = persistentListOf(
+                    ComplexExpected.TestObject(
+                        string = "value1",
+                        numbers = persistentListOf(1, 2, 3)
+                    ),
+                    ComplexExpected.TestObject(
+                        string = "value2",
+                        numbers = persistentListOf(4, 5, 6)
+                    )
+                )
+            )
+        )
+    )
+
+    private data class ComplexExpected(
+        @SerializedName("matrix")
+        val matrix: ImmutableList<ImmutableList<Int>>,
+        @SerializedName("objectList")
+        val objectList: ImmutableList<TestObject>,
+        @SerializedName("nestedObjectList")
+        val nestedObjectList: ImmutableList<TestObjectList>
+    ) {
         data class TestObject(
             @SerializedName("string")
             val string: String,
             @SerializedName("numbers")
             val numbers: ImmutableList<Int>
+        )
+
+        data class TestObjectList(
+            @SerializedName("string")
+            val string: String,
+            @SerializedName("objects")
+            val objects: ImmutableList<TestObject>
         )
     }
 }
