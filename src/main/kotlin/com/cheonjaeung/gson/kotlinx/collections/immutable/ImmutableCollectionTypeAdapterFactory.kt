@@ -31,7 +31,9 @@ import java.lang.reflect.Type
  * val gson = builder.create()
  * ```
  */
-class ImmutableCollectionTypeAdapterFactory : TypeAdapterFactory {
+class ImmutableCollectionTypeAdapterFactory(
+    private val complexMapKeySerialization: Boolean = false
+) : TypeAdapterFactory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any?> create(gson: Gson?, typeToken: TypeToken<T>?): TypeAdapter<T>? {
@@ -67,7 +69,7 @@ class ImmutableCollectionTypeAdapterFactory : TypeAdapterFactory {
                 val (keyType, valueType) = getMapKeyValueType(type)
                 val keyTypeAdapter = gson.getAdapter(TypeToken.get(keyType))
                 val valueTypeAdapter = gson.getAdapter(TypeToken.get(valueType))
-                return ImmutableMapTypeAdapter(keyTypeAdapter, valueTypeAdapter) as TypeAdapter<T>
+                return ImmutableMapTypeAdapter(keyTypeAdapter, valueTypeAdapter, complexMapKeySerialization) as TypeAdapter<T>
             }
 
             else -> null

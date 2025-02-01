@@ -85,7 +85,8 @@ class ImmutableSetTypeAdapter<E>(
 
 class ImmutableMapTypeAdapter<K, V>(
     private val keyTypeAdapter: TypeAdapter<K>,
-    private val valueTypeAdapter: TypeAdapter<V>
+    private val valueTypeAdapter: TypeAdapter<V>,
+    private val complexMapKeySerialization: Boolean
 ) : TypeAdapter<ImmutableMap<K, V>>() {
     override fun write(writer: JsonWriter?, value: ImmutableMap<K, V>?) {
         if (writer == null) {
@@ -94,6 +95,16 @@ class ImmutableMapTypeAdapter<K, V>(
 
         if (value == null) {
             writer.nullValue()
+            return
+        }
+
+        if (!complexMapKeySerialization) {
+            writer.beginObject()
+            for ((k, v) in value) {
+                writer.name(k.toString())
+                valueTypeAdapter.write(writer, v)
+            }
+            writer.endObject()
             return
         }
 
